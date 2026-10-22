@@ -58,6 +58,27 @@ jobs:
         run: |
           & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" /Odist windows/avroshot.iss
 
+      - name: Check artifact sizes (GitHub per-file limit: 100MB)
+        run: |
+          Get-ChildItem dist\*.exe | ForEach-Object {
+            $mb = [math]::Round($_.Length / 1MB, 1)
+            Write-Host "$($_.Name): $mb MB"
+            if ($_.Length -gt 95MB) { Write-Host "::warning::$($_.Name) is close to the 100MB GitHub file limit" }
+          }
+
+      - name: Copy exe into windows/ folder
+        run: |
+          Copy-Item dist\AvroShot.exe windows\AvroShot.exe -Force
+          Copy-Item dist\AvroShot-Setup.exe windows\AvroShot-Setup.exe -Force
+
+      - name: Commit exe into windows/ folder
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add windows/AvroShot.exe windows/AvroShot-Setup.exe
+          git commit -m "Build ${{ github.ref_name }} Windows release: AvroShot.exe + AvroShot-Setup.exe" || Write-Host "No changes to commit"
+          git push origin HEAD:main
+
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
