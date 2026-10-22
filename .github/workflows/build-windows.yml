@@ -4,6 +4,11 @@ on:
   push:
     tags: ["v*"]
   workflow_dispatch:
+    inputs:
+      tag:
+        description: "Existing release tag to rebuild the Windows files into (e.g. v1.0.1). Leave empty to only rebuild and commit them."
+        required: false
+        type: string
 
 jobs:
   build-windows:
@@ -114,12 +119,25 @@ jobs:
           Copy-Item dist\AvroShot-Setup.exe windows\AvroShot-Setup.exe -Force -ErrorAction Stop
 
       - name: Commit exe into windows/ folder
+        shell: pwsh
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add windows/AvroShot.exe windows/AvroShot-Setup.exe
-          git commit -m "Build ${{ github.ref_name }} Windows release: AvroShot.exe + AvroShot-Setup.exe" || Write-Host "No changes to commit"
-          git push origin HEAD:main
+          git commit -m "Build ${{ github.ref_name }} Windows release: AvroShot.exe + AvroShot-Setup.exe"
+          if ($LASTEXITCODE -ne 0) { Write-Host "No changes to commit" }
+          # The macOS/Linux workflows also commit their artefacts on a tag push, so
+          # retry with a merge: a rejected push must never fail the release.
+          $pushed = $false
+          for ($i = 1; $i -le 5; $i++) {
+            git fetch origin main --quiet
+            git merge --no-edit origin/main
+            if ($LASTEXITCODE -ne 0) { throw "Could not merge origin/main - another build changed the same files." }
+            git push origin HEAD:main
+            if ($LASTEXITCODE -eq 0) { $pushed = $true; Write-Host "Pushed on attempt $i"; break }
+            Start-Sleep -Seconds 10
+          }
+          if (-not $pushed) { throw "Could not push the rebuilt Windows binaries to main after 5 attempts." }
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
@@ -130,10 +148,11 @@ jobs:
             dist/AvroShot-Setup.exe
 
       - name: Create GitHub Release
-        if: startsWith(github.ref, 'refs/tags/v')
+        if: startsWith(github.ref, 'refs/tags/v') || inputs.tag != ''
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ inputs.tag || github.ref_name }}
           files: |
             dist/AvroShot.exe
             dist/AvroShot-Setup.exe
-          generate_release_notes: true
+          generate_release_notes: ${{ inputs.tag == '' }}
