@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <defs>
+    <linearGradient id="avroGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#7c3aed"/>
+      <stop offset="50%" stop-color="#db2777"/>
+      <stop offset="100%" stop-color="#f43f5e"/>
+    </linearGradient>
+  </defs>
+  <rect x="8" y="8" width="112" height="112" rx="26" fill="url(#avroGrad)"/>
+  <rect x="30" y="30" width="68" height="68" rx="8" fill="none" stroke="#ffffff" stroke-width="6" stroke-dasharray="10 6"/>
+  <circle cx="30" cy="30" r="6" fill="#ffffff"/>
+  <circle cx="98" cy="30" r="6" fill="#ffffff"/>
+  <circle cx="30" cy="98" r="6" fill="#ffffff"/>
+  <circle cx="98" cy="98" r="6" fill="#ffffff"/>
+  <circle cx="64" cy="64" r="14" fill="none" stroke="#ffffff" stroke-width="5"/>
+  <circle cx="64" cy="64" r="5" fill="#ffffff"/>
+</svg>

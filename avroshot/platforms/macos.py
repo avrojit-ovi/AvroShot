@@ -1,0 +1,81 @@
+"""macOS platform backend for AvroShot (future-ready cross-platform support)."""
+
+from __future__ import annotations
+
+import os
+import shutil
+import subprocess
+import tempfile
+
+from PyQt6.QtCore import QRect, Qt
+from PyQt6.QtGui import QGuiApplication, QImage, QPainter, QPixmap
+from PyQt6.QtWidgets import QApplication
+
+from avroshot import APP_NAME
+from avroshot.platforms.base import PlatformBackend
+
+
+class MacOSBackend(PlatformBackend):
+    """Handles screen capture, clipboard, notifications, and shortcuts on macOS."""
+
+    def capture_fullscreen(self) -> QPixmap | None:
+        if shutil.which("screencapture"):
+            fd, tmp_path = tempfile.mkstemp(prefix="avroshot_", suffix=".png")
+            os.close(fd)
+            try:
+                res = subprocess.run(["screencapture", "-x", tmp_path], timeout=5)
+                if res.returncode == 0 and os.path.exists(tmp_path):
+                    img = QImage(tmp_path)
+                    os.remove(tmp_path)
+                    if not img.isNull():
+                        return QPixmap.fromImage(img)
+            except Exception:
+                pass
+
+        screens = QGuiApplication.screens()
+        if not screens:
+            return None
+        if len(screens) == 1:
+            return screens[0].grabWindow(0)
+
+        virtual_rect = QRect()
+        for scr in screens:
+            virtual_rect = virtual_rect.united(scr.geometry())
+
+        canvas = QPixmap(virtual_rect.size())
+        canvas.fill(Qt.GlobalColor.black)
+        painter = QPainter(canvas)
+        for scr in screens:
+            geom = scr.geometry()
+            shot = scr.grabWindow(0)
+            offset = geom.topLeft() - virtual_rect.topLeft()
+            painter.drawPixmap(offset, shot)
+        painter.end()
+        return canvas
+
+    def copy_to_clipboard(self, pixmap: QPixmap) -> bool:
+        cb = QGuiApplication.clipboard()
+        if cb is not None:
+            cb.setPixmap(pixmap)
+            QApplication.processEvents()
+            return True
+        return False
+
+    def copy_text_to_clipboard(self, text: str) -> bool:
+        cb = QGuiApplication.clipboard()
+        if cb is not None:
+            cb.setText(text)
+            QApplication.processEvents()
+            return True
+        return False
+
+    def send_notification(self, title: str, message: str, icon_path: str | None = None) -> None:
+        if shutil.which("osascript"):
+            script = f'display notification "{message}" with title "{title}"'
+            try:
+                subprocess.Popen(["osascript", "-e", script], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            except Exception:
+                pass
+
+    def register_global_shortcut(self, command: str, binding: str = "<Super><Shift>s") -> tuple[bool, str]:
+        return True, f"Configure {APP_NAME} shortcut in macOS System Settings -> Keyboard -> Keyboard Shortcuts."

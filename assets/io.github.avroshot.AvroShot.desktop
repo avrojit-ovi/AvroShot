@@ -1,0 +1,33 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=AvroShot
+GenericName=Screenshot Tool
+Comment=Lightshot-style Screenshot & Annotation Tool for Ubuntu Linux
+Exec=avroshot --capture
+Icon=avroshot
+Terminal=false
+Categories=Utility;Graphics;2DGraphics;Photography;
+Keywords=screenshot;lightshot;capture;snip;annotate;screen;avroshot;
+StartupNotify=false
+Actions=CaptureNow;CaptureDelay;TrayMode;History;Settings;
+
+[Desktop Action CaptureNow]
+Name=Capture Screen Now
+Exec=avroshot --capture
+
+[Desktop Action CaptureDelay]
+Name=Capture in 3 Seconds
+Exec=avroshot --delay 3
+
+[Desktop Action TrayMode]
+Name=Start in System Tray
+Exec=avroshot --tray
+
+[Desktop Action History]
+Name=Screenshot History
+Exec=avroshot --history
+
+[Desktop Action Settings]
+Name=Settings
+Exec=avroshot --settings
