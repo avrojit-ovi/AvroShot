@@ -36,7 +36,15 @@ All notable changes to AvroShot are documented in this file.
 - Slimmed PyInstaller configuration (only QtCore/QtGui/QtWidgets needed) so
   the executable stays well below GitHub's file size limits.
 
+### Added — macOS build tooling
+- `macos/` folder: app icon source, install guide, and the CI-built
+  `AvroShot-macOS-arm64.zip` bundle (Apple Silicon).
+- GitHub Actions workflow (`.github/workflows/build-macos.yml`) building
+  `AvroShot.app` with PyInstaller on `macos-latest`, zipping it, committing
+  it into `macos/`, and attaching it to the GitHub Release on `v*` tags.
+
 ### Docs
-- README with feature list, install guides (Linux + Windows), CLI reference,
-  keyboard shortcuts, and AvroShot vs Lightshot comparison section.
+- README with feature list, install guides (Linux + Windows + macOS), CLI
+  reference, keyboard shortcuts, and AvroShot vs Lightshot comparison section.
 - LICENSE (MIT).
+- `windows/README.md` and `macos/README.md` platform install guides.
