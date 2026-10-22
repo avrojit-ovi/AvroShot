@@ -17,8 +17,22 @@ python -m PyInstaller --noconfirm --clean --onefile --windowed ^
   --name AvroShot ^
   --icon "%~dp0icon.ico" ^
   --paths "%SRC%" ^
-  --collect-all PyQt6 ^
   --hidden-import avroshot.platforms.windows ^
+  --exclude-module PyQt6.QtQml ^
+  --exclude-module PyQt6.QtQuick ^
+  --exclude-module PyQt6.QtQuick3D ^
+  --exclude-module PyQt6.QtQuickWidgets ^
+  --exclude-module PyQt6.Qt3DCore ^
+  --exclude-module PyQt6.QtNetwork ^
+  --exclude-module PyQt6.QtMultimedia ^
+  --exclude-module PyQt6.QtWebEngineCore ^
+  --exclude-module PyQt6.QtPdf ^
+  --exclude-module PyQt6.QtSql ^
+  --exclude-module PyQt6.QtTest ^
+  --exclude-module PyQt6.QtDesigner ^
+  --exclude-module PyQt6.QtHelp ^
+  --exclude-module PyQt6.QtOpenGL ^
+  --exclude-module PyQt6.QtSvg ^
   --distpath "%DIST%" ^
   --workpath "%WORK%" ^
   --specpath "%WORK%" ^
