@@ -41,7 +41,7 @@ jobs:
           python -m PyInstaller --noconfirm --clean --windowed \
             --name AvroShot \
             --osx-bundle-identifier io.github.avroshot.AvroShot \
-            --icon macos/AvroShot.icns \
+            --icon "${{ github.workspace }}/macos/AvroShot.icns" \
             --paths linux \
             --hidden-import avroshot.platforms.macos \
             --exclude-module PyQt6.QtQml \
