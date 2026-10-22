@@ -28,7 +28,7 @@ jobs:
         run: |
           python -m PyInstaller --noconfirm --clean --onefile --windowed `
             --name AvroShot `
-            --icon windows/icon.ico `
+            --icon "${{ github.workspace }}\windows\icon.ico" `
             --paths linux `
             --hidden-import avroshot.platforms.windows `
             --exclude-module PyQt6.QtQml `
