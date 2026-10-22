@@ -85,7 +85,9 @@ What `install.sh` does:
 1. Ensures `PyQt6` is installed.
 2. Copies the app to `~/.local/share/avroshot` and installs the `avroshot`
    command to `~/.local/bin/avroshot` (verified before the installer exits).
-3. Installs the desktop entry (`io.github.avroshot.AvroShot.desktop`) and vector/PNG icons so **AvroShot** appears in your Ubuntu Application Menu.
+3. Installs **one** desktop entry (`io.github.avroshot.AvroShot.desktop`) and the
+   AvroShot icon (SVG + 16–256 px PNGs, icon cache refreshed). Clicking
+   **AvroShot** in the application grid opens its Settings window.
 4. Configures Wayland screenshot permission and registers the global shortcut **`Super+Shift+S`** (`<Super><Shift>s`).
 5. Builds the installable Debian package at `linux/debian/avroshot_1.0.0_all.deb`.
 
@@ -96,8 +98,10 @@ What `install.sh` does:
 The hotkey is configurable from AvroShot's own Settings window — no terminal needed:
 
 1. Open **Settings** in any of these ways:
-   - Right-click the **AvroShot icon** in the dock / application grid → **Settings**,
+   - Click the **AvroShot icon** in the dock / application grid (it opens Settings),
    - Click the **tray icon** (start it once with `avroshot --tray`) → **Settings…**,
+   - Right-click the icon → **Capture Screen Now / 3s Delay / Tray / History**
+     for the direct actions,
    - or run `avroshot --settings`.
 2. Click the **Global Hotkey** box and press the combination you want, e.g.
    `Super+Shift+S`. The field records the keys directly, so there is no need to

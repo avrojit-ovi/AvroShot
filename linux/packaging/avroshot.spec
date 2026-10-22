@@ -49,7 +49,6 @@ cp -a usr %{buildroot}/
 %files
 /usr/bin/avroshot
 /usr/share/avroshot
-/usr/share/applications/avroshot.desktop
 /usr/share/applications/io.github.avroshot.AvroShot.desktop
 /usr/share/icons/hicolor/scalable/apps/avroshot.svg
 /usr/share/doc/avroshot

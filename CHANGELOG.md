@@ -51,6 +51,19 @@ All notable changes to AvroShot are documented in this file.
   also registers a newly recorded hotkey (previously the value was only
   stored, never bound).
 
+### Fixed — Desktop entry & icon
+- The application grid showed **two** `AvroShot` entries because the installer
+  wrote both `io.github.avroshot.AvroShot.desktop` and `avroshot.desktop`.
+  Only the reverse-DNS entry is installed now (and stale copies are removed).
+- Both entries showed a generic gear icon: the icon files existed but
+  `~/.local/share/icons/hicolor/icon-theme.cache` was older than them, so the
+  shell never saw `avroshot` in the theme. The installer now renders 16–256 px
+  PNGs plus the SVG and refreshes the icon and desktop databases.
+- Clicking the AvroShot icon did nothing but start a capture. The menu entry now
+  opens the **Settings** window; `Super+Shift+S` (or the right-click actions
+  *Capture Screen Now*, *Capture with 3s Delay*, *Start in System Tray*,
+  *Screenshot History*) still take screenshots directly.
+
 ### Fixed
 - The user-level `install.sh` launcher pointed at the repository root instead
   of the `linux/` package directory, so every entry point (`avroshot`, the

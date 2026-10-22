@@ -41,11 +41,9 @@ exec python3 -m avroshot "$@"
 EOF
 chmod 0755 "${DEST}/usr/bin/avroshot"
 
-# Desktop entries (both the reverse-DNS id and the short one)
+# One menu entry only - a second file would show up as a duplicate AvroShot icon
 install -m 0644 "${LINUX_DIR}/assets/io.github.avroshot.AvroShot.desktop" \
     "${DEST}/usr/share/applications/io.github.avroshot.AvroShot.desktop"
-install -m 0644 "${LINUX_DIR}/assets/io.github.avroshot.AvroShot.desktop" \
-    "${DEST}/usr/share/applications/avroshot.desktop"
 
 # Icon
 install -m 0644 "${LINUX_DIR}/assets/avroshot.svg" \
