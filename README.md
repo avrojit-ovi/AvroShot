@@ -6,6 +6,27 @@
 
 ---
 
+## 📥 Download & Install
+
+Grab the latest build from the
+[Releases page](https://github.com/avrojit-ovi/AvroShot/releases/latest):
+
+| Platform | File | What it is |
+| :--- | :--- | :--- |
+| **Windows 10/11** | **`AvroShot-Setup.exe`** | **Recommended.** Installable setup — installs AvroShot permanently (all users or just you), adds Start Menu entries and an uninstaller, and shows up in *Settings → Apps*. |
+| **Windows 10/11** | `AvroShot.exe` | Portable executable — no install needed, just run it. |
+| **macOS (Apple Silicon)** | `AvroShot-macOS-arm64.zip` | Unzip, then drag `AvroShot.app` into **Applications**. |
+| **Ubuntu / Fedora / openSUSE / Arch** | `.deb`, `.rpm`, `.pkg.tar.zst` | Prebuilt packages committed under [`linux/`](linux/), or run `linux/install.sh`. |
+
+On Windows, double-click **`AvroShot-Setup.exe`** and follow the wizard — pick
+**Install for all users** (Program Files, one admin prompt) or **Install for me
+only** (`%LOCALAPPDATA%\Programs`, no admin). If SmartScreen says *"Windows
+protected your PC"*, click **More info → Run anyway**: the build is open source
+but not code-signed. To remove it later, use *Settings → Apps → AvroShot →
+Uninstall* or the **Uninstall AvroShot** Start Menu shortcut.
+
+---
+
 ## ✨ Features
 
 ### Core Lightshot Experience
@@ -235,8 +256,8 @@ AvroShot/
 │   ├── pyproject.toml
 │   └── requirements.txt
 ├── windows/                 # Windows build tooling
+│   ├── AvroShot-Setup.exe   # Prebuilt installable setup - the recommended download (committed by CI)
 │   ├── AvroShot.exe         # Prebuilt portable executable (committed by CI)
-│   ├── AvroShot-Setup.exe   # Prebuilt installable setup (committed by CI)
 │   ├── icon.ico             # Windows app icon
 │   ├── avroshot.iss         # Inno Setup installer script
 │   └── build_windows.bat    # One-command Windows build script
@@ -258,8 +279,10 @@ AvroShot/
 Because `avroshot/platforms/` cleanly separates OS-specific capture and clipboard logic from the PyQt6 UI, the same codebase builds on Windows.
 
 **Option A — GitHub Actions (recommended):** push a `v*` tag (or run the *Build Windows Release* workflow manually from the Actions tab). The CI builds on `windows-latest` and produces both:
-- `AvroShot.exe` — portable executable
-- `AvroShot-Setup.exe` — installable installer (Inno Setup: Start Menu + optional Desktop shortcut)
+- `AvroShot-Setup.exe` — **the installable setup** (Inno Setup). Installs AvroShot permanently
+  for all users or just the current user, adds Start Menu entries and an uninstaller, and
+  registers it in *Settings → Apps*. CI installs and uninstalls it as a smoke test.
+- `AvroShot.exe` — portable executable, for users who don't want an install.
 
 Download them from the workflow run's artifacts or the GitHub Release page.
 
@@ -267,7 +290,8 @@ Download them from the workflow run's artifacts or the GitHub Release page.
 ```bat
 windows\build_windows.bat
 ```
-This runs PyInstaller and compiles the Inno Setup installer (requires [Inno Setup 6](https://jrsoftware.org/isinfo.php) for the installer step; the portable `.exe` is built regardless).
+This runs PyInstaller and compiles the Inno Setup installer. [Inno Setup 6 or 7](https://jrsoftware.org/isdl.php)
+is required: the script stops with an error instead of producing a portable-only build.
 
 ---
 

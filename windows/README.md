@@ -5,7 +5,7 @@ Two files are built for Windows and published on the
 
 | File | What it is |
 | :--- | :--- |
-| **`AvroShot-Setup.exe`** | **Recommended.** Installable package (Inno Setup). Adds Start Menu entry, optional Desktop shortcut, and an uninstaller. |
+| **`AvroShot-Setup.exe`** | **Recommended.** Installable setup. Installs AvroShot permanently, adds Start Menu entries and an uninstaller, and registers it in *Settings → Apps*. |
 | `AvroShot.exe` | Portable executable. No install needed — just run it from any folder. |
 
 ## Install in 3 steps
@@ -17,15 +17,36 @@ Two files are built for Windows and published on the
    fully auditable in this repository).
 3. Follow the wizard. Done — launch **AvroShot** from the Start Menu.
 
+### Install for all users or just for you
+
+The setup asks which mode you want:
+
+- **Install for all users** — installs into `C:\Program Files\AvroShot` and is
+  available to every account on the PC. Windows asks for administrator
+  approval once.
+- **Install for me only** — installs into `%LOCALAPPDATA%\Programs\AvroShot`
+  with no administrator prompt.
+
+Either way the app is a permanent, registered install: it shows up in
+**Settings → Apps → Installed apps** with its version and icon, and there is an
+**Uninstall AvroShot** entry in the Start Menu folder.
+
 ## First run on Windows
 
-- **Capture screen**: run `AvroShot.exe` or `avroshot --capture`.
+- **Capture screen**: launch **AvroShot** from the Start Menu, or run
+  `AvroShot.exe` (portable) — or `avroshot --capture`.
 - **Global hotkey**: bind `Print Screen` (or any key) to AvroShot in
   *Windows Settings → Time & language → Typing → Advanced keyboard settings*,
   or use AutoHotkey. A native hotkey registration is planned for a future
   release.
 - **Save folder**: screenshots go to `Pictures\AvroShot` by default
   (changeable in Settings).
+
+## Uninstall
+
+*Settings → Apps → Installed apps → AvroShot → Uninstall*, or the
+**Uninstall AvroShot** shortcut in the Start Menu folder. Your saved
+screenshots and settings in `%APPDATA%\AvroShot` are left untouched.
 
 ## Building from source on Windows
 
@@ -35,8 +56,15 @@ cd AvroShot\windows
 build_windows.bat
 ```
 
-Requirements: Python 3.10+, [Inno Setup 6](https://jrsoftware.org/isinfo.php)
-(for the installer; the portable exe is built regardless).
+Requirements: Python 3.10+ and [Inno Setup 6 or 7](https://jrsoftware.org/isdl.php).
+The script builds `dist\AvroShot.exe` (portable) and then compiles
+`dist\AvroShot-Setup.exe` (installable); it stops with an error if Inno Setup
+is missing, because a release must never ship the portable exe alone.
+
+You can also let CI do it: run the **Build Windows Release** workflow from the
+Actions tab (or push a `v*` tag). CI builds both files, installs and uninstalls
+the setup in a smoke test, commits both into `windows/`, and attaches them to
+the release.
 
 ## Antivirus false positives
 

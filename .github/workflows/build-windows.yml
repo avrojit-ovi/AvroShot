@@ -54,22 +54,64 @@ jobs:
       - name: Install Inno Setup
         run: choco install innosetup -y --no-progress
 
-      - name: Compile installer
+      - name: Locate Inno Setup compiler
+        id: iscc
+        shell: pwsh
         run: |
-          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" /Odist windows/avroshot.iss
+          $candidates = @(
+            "${env:ProgramFiles(x86)}\Inno Setup 7\ISCC.exe",
+            "$env:ProgramFiles\Inno Setup 7\ISCC.exe",
+            "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe",
+            "$env:ProgramFiles\Inno Setup 6\ISCC.exe",
+            "$env:ChocolateyInstall\bin\ISCC.exe"
+          )
+          $iscc = $candidates | Where-Object { $_ -and (Test-Path $_) } | Select-Object -First 1
+          if (-not $iscc) { throw "Inno Setup (ISCC.exe) was not found - the installable setup cannot be built." }
+          Write-Host "Using $iscc"
+          "path=$iscc" >> $env:GITHUB_OUTPUT
 
-      - name: Check artifact sizes against GitHub's 100MB per-file limit
+      - name: Compile installer
+        run: '& "${{ steps.iscc.outputs.path }}" /Odist windows/avroshot.iss'
+
+      - name: Verify the installable setup was built
+        shell: pwsh
         run: |
-          Get-ChildItem dist\*.exe | ForEach-Object {
-            $mb = [math]::Round($_.Length / 1MB, 1)
-            Write-Host "$($_.Name): $mb MB"
-            if ($_.Length -gt 95MB) { Write-Host "::warning::$($_.Name) is close to the 100MB GitHub file limit" }
+          foreach ($f in @("dist\AvroShot.exe", "dist\AvroShot-Setup.exe")) {
+            if (-not (Test-Path $f)) {
+              throw "$f was not produced - refusing to publish a release without the installable setup."
+            }
+            $mb = [math]::Round((Get-Item $f).Length / 1MB, 1)
+            Write-Host "$f : $mb MB"
+            if ((Get-Item $f).Length -gt 95MB) {
+              Write-Host "::warning::$f is close to the 100MB GitHub file limit"
+            }
           }
 
-      - name: Copy exe into windows/ folder
+      - name: Smoke-test the installer (silent install + uninstall)
+        shell: pwsh
         run: |
-          Copy-Item dist\AvroShot.exe windows\AvroShot.exe -Force
-          Copy-Item dist\AvroShot-Setup.exe windows\AvroShot-Setup.exe -Force
+          $target = Join-Path $env:LOCALAPPDATA "Programs\AvroShot"
+          if (Test-Path $target) { Remove-Item $target -Recurse -Force }
+          $install = Start-Process -FilePath "dist\AvroShot-Setup.exe" `
+            -ArgumentList "/VERYSILENT", "/SUPPRESSMSGBOXES", "/NORESTART", "/CURRENTUSER" `
+            -Wait -PassThru
+          if ($install.ExitCode -ne 0) { throw "Installer failed with exit code $($install.ExitCode)" }
+          if (-not (Test-Path (Join-Path $target "AvroShot.exe"))) { throw "Installed AvroShot.exe was not found in $target" }
+          $uninstaller = Get-ChildItem $target -Filter "unins*.exe" | Select-Object -First 1
+          if (-not $uninstaller) { throw "No uninstaller was created in $target" }
+          $uninstall = Start-Process -FilePath $uninstaller.FullName `
+            -ArgumentList "/VERYSILENT", "/SUPPRESSMSGBOXES", "/NORESTART" `
+            -Wait -PassThru
+          if ($uninstall.ExitCode -ne 0) { throw "Uninstaller failed with exit code $($uninstall.ExitCode)" }
+          Start-Sleep -Seconds 3
+          if (Test-Path (Join-Path $target "AvroShot.exe")) { throw "Uninstall left AvroShot.exe behind" }
+          Write-Host "Install and uninstall verified."
+
+      - name: Copy exe into windows/ folder
+        shell: pwsh
+        run: |
+          Copy-Item dist\AvroShot.exe windows\AvroShot.exe -Force -ErrorAction Stop
+          Copy-Item dist\AvroShot-Setup.exe windows\AvroShot-Setup.exe -Force -ErrorAction Stop
 
       - name: Commit exe into windows/ folder
         run: |
