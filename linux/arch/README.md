@@ -1,10 +1,10 @@
 # AvroShot for Arch Linux / Manjaro
 
-**`avroshot-1.0.0-1-any.pkg.tar.zst`** — for Arch Linux, Manjaro,
+**`avroshot-1.0.2-1-any.pkg.tar.zst`** — for Arch Linux, Manjaro,
 EndeavourOS, Garuda Linux, CachyOS and other `pacman` distributions.
 
 ```bash
-sudo pacman -U ./avroshot-1.0.0-1-any.pkg.tar.zst
+sudo pacman -U ./avroshot-1.0.2-1-any.pkg.tar.zst
 ```
 
 Dependencies (`python`, `python-pyqt6`, `python-gobject`, `python-dbus`,

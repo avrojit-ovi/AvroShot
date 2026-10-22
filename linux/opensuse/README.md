@@ -1,10 +1,10 @@
 # AvroShot for openSUSE / SLES
 
-**`avroshot-1.0.0-1.noarch.rpm`** — for openSUSE Tumbleweed, openSUSE Leap 15.6+
+**`avroshot-1.0.2-1.noarch.rpm`** — for openSUSE Tumbleweed, openSUSE Leap 15.6+
 and SUSE Linux Enterprise with the openSUSE repositories enabled.
 
 ```bash
-sudo zypper install ./avroshot-1.0.0-1.noarch.rpm
+sudo zypper install ./avroshot-1.0.2-1.noarch.rpm
 ```
 
 openSUSE names the PyQt6 binding `python3-PyQt6` (Fedora calls it

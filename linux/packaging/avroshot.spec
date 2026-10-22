@@ -2,7 +2,7 @@
 %global debug_package %{nil}
 
 Name:           avroshot
-Version:        1.0.0
+Version:        1.0.2
 Release:        1
 Summary:        Fast Lightshot-style screenshot and annotation tool
 License:        MIT
@@ -54,6 +54,10 @@ cp -a usr %{buildroot}/
 /usr/share/doc/avroshot
 
 %changelog
+* Fri Oct 23 2026 Ovi Chowdhury Joy <72299169+avrojit-ovi@users.noreply.github.com> - 1.0.2-1
+- Launch the installed app unelevated on Windows, document Smart App Control
+  blocking the unsigned setup, and retry artifact pushes so a tag build
+  cannot fail on a race.
 * Thu Oct 23 2026 Ovi Chowdhury Joy <72299169+avrojit-ovi@users.noreply.github.com> - 1.0.0-1
 - Initial Linux release: Wayland + X11 capture, annotation overlay, tray,
   screenshot history, delayed capture and cloud upload.

@@ -9,7 +9,7 @@
 ; standard Add/Remove Programs entry, and a working uninstaller.
 
 #define AppName "AvroShot"
-#define AppVersion "1.0.0"
+#define AppVersion "1.0.2"
 #define AppPublisher "AvroShot Project"
 #define AppExeName "AvroShot.exe"
 #define AppUrl "https://github.com/avrojit-ovi/AvroShot"

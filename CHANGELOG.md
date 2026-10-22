@@ -2,6 +2,32 @@
 
 All notable changes to AvroShot are documented in this file.
 
+## [1.0.2] — 2026-10-23
+
+### Fixed — Windows
+- The installer now launches AvroShot through Explorer, so an all-users install
+  starts the app as the logged-on user with normal rights. Starting it from the
+  elevated Setup made Windows Application Control / Smart App Control block the
+  unsigned exe with *"An Application Control policy has blocked this file"*
+  (`0x11C3` / 4551).
+
+### Fixed — releases and CI
+- Windows, macOS and Linux workflows merge `origin/main` and retry the push, so
+  a tag build no longer fails when two platforms commit their artefacts at the
+  same moment.
+- The Linux *Commit packages* job no longer fails on a rejected push, and the
+  macOS build no longer hides a failed push behind `|| echo`.
+- One `noarch` rpm is attached per release instead of two identical-purpose
+  assets overwriting each other; it installs on Fedora, RHEL and openSUSE alike.
+- Manual runs of the Windows and Linux workflows attach their artefacts to the
+  release named in the `tag` input.
+
+### Docs
+- New *Windows blocked AvroShot (Application Control / Smart App Control)*
+  section, linked from the README: why the unsigned setup is refused, that
+  Smart App Control has no per-app allow option, how to turn it off, and how to
+  run AvroShot from source when it cannot be turned off.
+
 ## [1.0.0] — 2026-10-22
 
 ### Added — Linux (Ubuntu)

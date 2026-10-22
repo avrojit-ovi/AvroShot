@@ -1,10 +1,10 @@
 # AvroShot for Fedora / RHEL
 
-**`avroshot-1.0.0-1.noarch.rpm`** — for Fedora, RHEL 9/10, CentOS Stream,
+**`avroshot-1.0.2-1.noarch.rpm`** — for Fedora, RHEL 9/10, CentOS Stream,
 Rocky Linux, AlmaLinux, Oracle Linux and Amazon Linux.
 
 ```bash
-sudo dnf install ./avroshot-1.0.0-1.noarch.rpm
+sudo dnf install ./avroshot-1.0.2-1.noarch.rpm
 ```
 
 Runtime dependencies (`python3-qt6`, `python3-gobject`, `python3-dbus`,

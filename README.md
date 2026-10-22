@@ -114,7 +114,7 @@ What `install.sh` does:
    AvroShot icon (SVG + 16–256 px PNGs, icon cache refreshed). Clicking
    **AvroShot** in the application grid opens its Settings window.
 4. Configures Wayland screenshot permission and registers the global shortcut **`Super+Shift+S`** (`<Super><Shift>s`).
-5. Builds the installable Debian package at `linux/debian/avroshot_1.0.0_all.deb`.
+5. Builds the installable Debian package at `linux/debian/avroshot_1.0.2_all.deb`.
 
 ---
 
@@ -179,23 +179,23 @@ committed straight into the matching folder — no build step needed to install:
 
 | Distribution family | Package | Folder |
 | :--- | :--- | :--- |
-| Debian 12+, Ubuntu 22.04+, Mint, Pop!_OS, Zorin, Kali, MX, Deepin | `avroshot_1.0.0_all.deb` | [`linux/debian`](linux/debian) |
-| Fedora, RHEL 9/10, CentOS Stream, Rocky, Alma, Oracle, Amazon Linux | `avroshot-1.0.0-1.noarch.rpm` | [`linux/fedora`](linux/fedora) |
-| openSUSE Tumbleweed / Leap 15.6+, SLES | `avroshot-1.0.0-1.noarch.rpm` | [`linux/opensuse`](linux/opensuse) |
-| Arch Linux, Manjaro, EndeavourOS, Garuda, CachyOS | `avroshot-1.0.0-1-any.pkg.tar.zst` | [`linux/arch`](linux/arch) |
+| Debian 12+, Ubuntu 22.04+, Mint, Pop!_OS, Zorin, Kali, MX, Deepin | `avroshot_1.0.2_all.deb` | [`linux/debian`](linux/debian) |
+| Fedora, RHEL 9/10, CentOS Stream, Rocky, Alma, Oracle, Amazon Linux | `avroshot-1.0.2-1.noarch.rpm` | [`linux/fedora`](linux/fedora) |
+| openSUSE Tumbleweed / Leap 15.6+, SLES | `avroshot-1.0.2-1.noarch.rpm` | [`linux/opensuse`](linux/opensuse) |
+| Arch Linux, Manjaro, EndeavourOS, Garuda, CachyOS | `avroshot-1.0.2-1-any.pkg.tar.zst` | [`linux/arch`](linux/arch) |
 
 ```bash
 # Debian / Ubuntu / Mint / Pop!_OS / Kali
-sudo apt install ./linux/debian/avroshot_1.0.0_all.deb
+sudo apt install ./linux/debian/avroshot_1.0.2_all.deb
 
 # Fedora / RHEL / Rocky / Alma / CentOS Stream
-sudo dnf install ./linux/fedora/avroshot-1.0.0-1.noarch.rpm
+sudo dnf install ./linux/fedora/avroshot-1.0.2-1.noarch.rpm
 
 # openSUSE / SLES
-sudo zypper install ./linux/opensuse/avroshot-1.0.0-1.noarch.rpm
+sudo zypper install ./linux/opensuse/avroshot-1.0.2-1.noarch.rpm
 
 # Arch / Manjaro / EndeavourOS
-sudo pacman -U ./linux/arch/avroshot-1.0.0-1-any.pkg.tar.zst
+sudo pacman -U ./linux/arch/avroshot-1.0.2-1-any.pkg.tar.zst
 ```
 
 Each package depends on the distribution's own Python + PyQt6 build (so Qt
@@ -249,10 +249,10 @@ AvroShot/
 │   │   ├── avroshot.spec    # Shared RPM spec (per-family Requires)
 │   │   ├── build_arch.sh    # Arch/Manjaro package builder
 │   │   └── PKGBUILD         # Arch recipe (AUR-ready)
-│   ├── debian/              # avroshot_1.0.0_all.deb (committed by CI)
-│   ├── fedora/              # avroshot-1.0.0-1.noarch.rpm (committed by CI)
-│   ├── opensuse/            # avroshot-1.0.0-1.noarch.rpm (committed by CI)
-│   ├── arch/                # avroshot-1.0.0-1-any.pkg.tar.zst (committed by CI)
+│   ├── debian/              # avroshot_1.0.2_all.deb (committed by CI)
+│   ├── fedora/              # avroshot-1.0.2-1.noarch.rpm (committed by CI)
+│   ├── opensuse/            # avroshot-1.0.2-1.noarch.rpm (committed by CI)
+│   ├── arch/                # avroshot-1.0.2-1-any.pkg.tar.zst (committed by CI)
 │   ├── tests/
 │   │   └── test_avroshot.py # Automated test suite
 │   ├── install.sh           # One-command Ubuntu installer

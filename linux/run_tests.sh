@@ -81,7 +81,7 @@ print("--- Installation artifacts ---")
 print("  avroshot binary:", os.path.expanduser("~/.local/bin/avroshot") if os.path.exists(os.path.expanduser("~/.local/bin/avroshot")) else "not on PATH")
 print("  desktop file:", os.path.expanduser("~/.local/share/applications/io.github.avroshot.AvroShot.desktop") if os.path.exists(os.path.expanduser("~/.local/share/applications/io.github.avroshot.AvroShot.desktop")) else "missing")
 print("  icon svg:", os.path.expanduser("~/.local/share/icons/hicolor/scalable/apps/avroshot.svg") if os.path.exists(os.path.expanduser("~/.local/share/icons/hicolor/scalable/apps/avroshot.svg")) else "missing")
-print("  .deb artifact:", os.path.join(REPO_DIR, "debian/avroshot_1.0.0_all.deb") if os.path.exists(os.path.join(REPO_DIR, "debian/avroshot_1.0.0_all.deb")) else "none")
+print("  .deb artifact:", os.path.join(REPO_DIR, "debian/avroshot_1.0.2_all.deb") if os.path.exists(os.path.join(REPO_DIR, "debian/avroshot_1.0.2_all.deb")) else "none")
 print()
 
 print("=== All checks complete ===")
