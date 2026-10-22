@@ -22,8 +22,12 @@ On Windows, double-click **`AvroShot-Setup.exe`** and follow the wizard — pick
 **Install for all users** (Program Files, one admin prompt) or **Install for me
 only** (`%LOCALAPPDATA%\Programs`, no admin). If SmartScreen says *"Windows
 protected your PC"*, click **More info → Run anyway**: the build is open source
-but not code-signed. To remove it later, use *Settings → Apps → AvroShot →
-Uninstall* or the **Uninstall AvroShot** Start Menu shortcut.
+but not code-signed. If **Smart App Control** blocks the setup with *"we could
+not verify its publisher"*, turn it off in *Windows Security → App & browser
+control → Smart App Control settings* and run the setup again — see
+[the Windows guide](windows/README.md#windows-blocked-avroshot-application-control--smart-app-control).
+To remove it later, use *Settings → Apps → AvroShot → Uninstall* or the
+**Uninstall AvroShot** Start Menu shortcut.
 
 ---
 
