@@ -1,0 +1,161 @@
+name: Build Linux Packages
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+jobs:
+  debian:
+    name: Debian / Ubuntu (.deb)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build .deb
+        run: bash linux/packaging/build_deb.sh
+
+      - name: Inspect package
+        run: |
+          dpkg-deb -I linux/debian/avroshot_*.deb
+          dpkg-deb -c linux/debian/avroshot_*.deb | tail -n 5
+
+      - name: Upload package
+        uses: actions/upload-artifact@v4
+        with:
+          name: pkg-debian
+          path: linux/debian/*.deb
+          if-no-files-found: error
+
+  fedora:
+    name: Fedora / RHEL / Rocky / Alma (.rpm)
+    runs-on: ubuntu-latest
+    container: fedora:latest
+    steps:
+      - name: Install build tools
+        run: dnf install -y git tar gzip rpm-build
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build RPM
+        run: bash linux/packaging/build_rpm.sh fedora
+
+      - name: Inspect package
+        run: |
+          rpm -qip linux/fedora/avroshot-*.rpm
+          echo "--- requires ---"
+          rpm -qp --requires linux/fedora/avroshot-*.rpm
+          echo "--- files ---"
+          rpm -qpl linux/fedora/avroshot-*.rpm | head -n 20
+
+      - name: Upload package
+        uses: actions/upload-artifact@v4
+        with:
+          name: pkg-fedora
+          path: linux/fedora/*.rpm
+          if-no-files-found: error
+
+  opensuse:
+    name: openSUSE / SLES (.rpm)
+    runs-on: ubuntu-latest
+    container: opensuse/tumbleweed:latest
+    steps:
+      - name: Install build tools
+        run: |
+          zypper -n --gpg-auto-import-keys refresh
+          zypper -n install --no-recommends git tar gzip rpm-build
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build RPM
+        run: bash linux/packaging/build_rpm.sh opensuse
+
+      - name: Inspect package
+        run: |
+          rpm -qip linux/opensuse/avroshot-*.rpm
+          echo "--- requires ---"
+          rpm -qp --requires linux/opensuse/avroshot-*.rpm
+
+      - name: Upload package
+        uses: actions/upload-artifact@v4
+        with:
+          name: pkg-opensuse
+          path: linux/opensuse/*.rpm
+          if-no-files-found: error
+
+  arch:
+    name: Arch / Manjaro (.pkg.tar.zst)
+    runs-on: ubuntu-latest
+    container: archlinux:latest
+    steps:
+      - name: Install build tools
+        run: pacman -Syu --noconfirm --needed base-devel git tar zstd
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build package as an unprivileged user
+        run: |
+          useradd -m builder
+          chown -R builder "${GITHUB_WORKSPACE}"
+          su builder -c "cd '${GITHUB_WORKSPACE}' && bash linux/packaging/build_arch.sh"
+
+      - name: Inspect package
+        run: |
+          pacman -Qip linux/arch/avroshot-*.pkg.tar.zst
+          echo "--- files ---"
+          tar --zstd -tf linux/arch/avroshot-*.pkg.tar.zst | head -n 20
+
+      - name: Upload package
+        uses: actions/upload-artifact@v4
+        with:
+          name: pkg-arch
+          path: linux/arch/*.pkg.tar.zst
+          if-no-files-found: error
+
+  commit-packages:
+    name: Commit packages into the repository
+    needs: [debian, fedora, opensuse, arch]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download packages
+        uses: actions/download-artifact@v4
+        with:
+          path: pkgs
+
+      - name: Copy packages into linux/<distro>/ folders
+        run: |
+          mkdir -p linux/debian linux/fedora linux/opensuse linux/arch
+          rm -f linux/debian/*.deb linux/fedora/*.rpm linux/opensuse/*.rpm linux/arch/*.pkg.tar.zst
+          cp pkgs/pkg-debian/*.deb linux/debian/
+          cp pkgs/pkg-fedora/*.rpm linux/fedora/
+          cp pkgs/pkg-opensuse/*.rpm linux/opensuse/
+          cp pkgs/pkg-arch/*.pkg.tar.zst linux/arch/
+          ls -lh linux/debian linux/fedora linux/opensuse linux/arch
+
+      - name: Commit packages
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add linux/debian linux/fedora linux/opensuse linux/arch
+          git commit -m "Build Linux packages: deb, Fedora/openSUSE rpm, Arch pkg.tar.zst" || echo "No changes to commit"
+          git push origin HEAD:main
+
+      - name: Attach packages to the release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            linux/debian/*.deb
+            linux/fedora/*.rpm
+            linux/opensuse/*.rpm
+            linux/arch/*.pkg.tar.zst
+          generate_release_notes: true

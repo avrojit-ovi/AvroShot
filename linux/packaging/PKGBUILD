@@ -1,0 +1,23 @@
+# Maintainer: Ovi Chowdhury Joy <72299169+avrojit-ovi@users.noreply.github.com>
+pkgname=avroshot
+pkgver=1.0.0
+pkgrel=1
+pkgdesc="Fast Lightshot-style screenshot and annotation tool for Linux"
+arch=('any')
+url="https://github.com/avrojit-ovi/AvroShot"
+license=('MIT')
+depends=('python' 'python-pyqt6' 'python-gobject' 'python-dbus' 'xdg-desktop-portal')
+optdepends=(
+    'wl-clipboard: Wayland clipboard support'
+    'xclip: X11 clipboard support'
+    'libnotify: desktop notifications'
+    'grim: Wayland screenshot fallback'
+    'spectacle: KDE Plasma screenshot fallback'
+    'gnome-screenshot: GNOME screenshot fallback'
+)
+source=("avroshot-${pkgver}-linux.tar.gz")
+sha256sums=('SKIP')
+
+package() {
+    cp -a "${srcdir}/avroshot-${pkgver}/usr" "${pkgdir}/"
+}

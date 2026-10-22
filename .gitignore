@@ -22,4 +22,5 @@ wheels/
 .venv/
 venv/
 packaging/build/
-*.deb
+# Built Linux packages in linux/debian, linux/fedora, linux/opensuse and
+# linux/arch are committed on purpose - they are the download artefacts.

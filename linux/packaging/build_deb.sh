@@ -1,64 +1,86 @@
 #!/usr/bin/env bash
+# Build the Debian/Ubuntu package: linux/debian/avroshot_<version>_all.deb
+#
+# Works on Debian, Ubuntu, Linux Mint, Pop!_OS, Zorin OS, elementary OS,
+# Kali Linux, MX Linux and any other dpkg/apt distribution.
 set -euo pipefail
 
-# Build a Debian/Ubuntu .deb package for AvroShot
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-ROOT_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
-VERSION="1.0.0"
+PACKAGING_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+LINUX_DIR="$(cd "${PACKAGING_DIR}/.." && pwd)"
+REPO_DIR="$(cd "${LINUX_DIR}/.." && pwd)"
+OUT_DIR="${LINUX_DIR}/debian"
 PKG_NAME="avroshot"
-ARCH="all"
-BUILD_ROOT="${ROOT_DIR}/packaging/build/${PKG_NAME}_${VERSION}_${ARCH}"
-DIST_DIR="${ROOT_DIR}/dist"
 
-rm -rf "${BUILD_ROOT}"
+VERSION="$(sed -n 's/^VERSION = "\(.*\)"$/\1/p' "${LINUX_DIR}/avroshot/__init__.py")"
+[ -n "${VERSION}" ] || { echo "error: could not read VERSION" >&2; exit 1; }
+
+BUILD_ROOT="$(mktemp -d)"
+trap 'rm -rf "${BUILD_ROOT}"' EXIT
+
+bash "${PACKAGING_DIR}/stage_app.sh" "${BUILD_ROOT}"
+
+# Debian wants the licence under usr/share/doc/<pkg>/copyright
+install -m 0644 "${REPO_DIR}/LICENSE" "${BUILD_ROOT}/usr/share/doc/avroshot/copyright"
+
+INSTALLED_SIZE="$(du -sk "${BUILD_ROOT}/usr" | cut -f1)"
+
 mkdir -p "${BUILD_ROOT}/DEBIAN"
-mkdir -p "${BUILD_ROOT}/usr/bin"
-mkdir -p "${BUILD_ROOT}/usr/lib/python3/dist-packages"
-mkdir -p "${BUILD_ROOT}/usr/share/applications"
-mkdir -p "${BUILD_ROOT}/usr/share/icons/hicolor/scalable/apps"
-mkdir -p "${DIST_DIR}"
-
-# Copy Python package
-cp -r "${ROOT_DIR}/avroshot" "${BUILD_ROOT}/usr/lib/python3/dist-packages/"
-find "${BUILD_ROOT}/usr/lib/python3/dist-packages/avroshot" -name "__pycache__" -type d -exec rm -rf {} +
-
-# Create /usr/bin/avroshot executable launcher
-cat > "${BUILD_ROOT}/usr/bin/avroshot" << 'EOF'
-#!/usr/bin/env python3
-import sys
-from avroshot.main import main
-
-if __name__ == "__main__":
-    raise SystemExit(main())
-EOF
-chmod 0755 "${BUILD_ROOT}/usr/bin/avroshot"
-
-# Copy desktop files and icon
-cp "${ROOT_DIR}/assets/io.github.avroshot.AvroShot.desktop" "${BUILD_ROOT}/usr/share/applications/io.github.avroshot.AvroShot.desktop"
-cp "${ROOT_DIR}/assets/io.github.avroshot.AvroShot.desktop" "${BUILD_ROOT}/usr/share/applications/avroshot.desktop"
-cp "${ROOT_DIR}/assets/avroshot.svg" "${BUILD_ROOT}/usr/share/icons/hicolor/scalable/apps/avroshot.svg"
-
-# Create DEBIAN/control
 cat > "${BUILD_ROOT}/DEBIAN/control" << EOF
 Package: ${PKG_NAME}
 Version: ${VERSION}
+Architecture: all
+Maintainer: Ovi Chowdhury Joy <72299169+avrojit-ovi@users.noreply.github.com>
+Installed-Size: ${INSTALLED_SIZE}
+Depends: python3 (>= 3.10), python3-pyqt6, python3-gi, python3-dbus, xdg-desktop-portal
+Recommends: wl-clipboard | xclip, libnotify-bin, grim
+Suggests: spectacle, gnome-screenshot
 Section: graphics
 Priority: optional
-Architecture: ${ARCH}
-Depends: python3 (>= 3.10), python3-pyqt6, python3-gi, python3-dbus, xdg-desktop-portal
-Recommends: wl-clipboard, xclip, libnotify-bin
-Maintainer: AvroShot Contributors <avroshot@users.noreply.github.com>
-Homepage: https://github.com/avroshot/AvroShot
-Description: Fast Lightshot-style Screenshot & Annotation Tool for Ubuntu Linux
- AvroShot freezes the screen with a dimmed overlay, lets you drag and resize
- a selection with 8 handles, annotate with Pen, Line, Arrow, Rectangle,
- Highlighter Marker, and Text with Undo/Redo, and quickly Copy, Save, or
- Upload for a shareable link. Works on both Wayland and X11.
+Homepage: https://github.com/avrojit-ovi/AvroShot
+Description: Fast Lightshot-style screenshot and annotation tool
+ AvroShot freezes your screen with a dimmed overlay, lets you drag and
+ resize a selection with 8 handles, annotate it with pen, line, arrow,
+ rectangle, marker and text (with undo/redo), then copy, save or upload
+ it for a shareable link.
+ .
+ It supports both Wayland (XDG Desktop Portal) and X11 sessions, offers
+ a system tray mode, delayed capture and a built-in screenshot history.
 EOF
 
-chmod 0755 "${BUILD_ROOT}/DEBIAN"
+# Refresh the desktop/icon caches after install so the menu entry shows up
+cat > "${BUILD_ROOT}/DEBIAN/postinst" << 'EOF'
+#!/bin/sh
+set -e
+if command -v update-desktop-database >/dev/null 2>&1; then
+    update-desktop-database -q /usr/share/applications || true
+fi
+if command -v gtk-update-icon-cache >/dev/null 2>&1; then
+    gtk-update-icon-cache -q -t -f /usr/share/icons/hicolor || true
+fi
+exit 0
+EOF
+chmod 0755 "${BUILD_ROOT}/DEBIAN/postinst"
+
+# Same cleanup on removal
+cat > "${BUILD_ROOT}/DEBIAN/postrm" << 'EOF'
+#!/bin/sh
+set -e
+if command -v update-desktop-database >/dev/null 2>&1; then
+    update-desktop-database -q /usr/share/applications || true
+fi
+if command -v gtk-update-icon-cache >/dev/null 2>&1; then
+    gtk-update-icon-cache -q -t -f /usr/share/icons/hicolor || true
+fi
+exit 0
+EOF
+chmod 0755 "${BUILD_ROOT}/DEBIAN/postrm"
+
+find "${BUILD_ROOT}" -type d -exec chmod 0755 {} +
 chmod 0644 "${BUILD_ROOT}/DEBIAN/control"
 
-OUT_DEB="${DIST_DIR}/${PKG_NAME}_${VERSION}_${ARCH}.deb"
-dpkg-deb --root-owner-group --build "${BUILD_ROOT}" "${OUT_DEB}"
+mkdir -p "${OUT_DIR}"
+OUT_DEB="${OUT_DIR}/${PKG_NAME}_${VERSION}_all.deb"
+rm -f "${OUT_DEB}"
+dpkg-deb --root-owner-group --build "${BUILD_ROOT}" "${OUT_DEB}" >/dev/null
+
 echo "Built Debian package: ${OUT_DEB}"
