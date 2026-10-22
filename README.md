@@ -1,6 +1,8 @@
 # AvroShot 📸
 
-**AvroShot** is a fast, lightweight, **Lightshot-inspired screenshot & annotation tool** built with **Python + PyQt6**. Designed first for **Ubuntu Linux (both Wayland & X11)** with a clean, modular platform architecture ready for **Windows** and **macOS**.
+**AvroShot** is a fast, lightweight, **Lightshot-inspired screenshot & annotation tool** built with **Python + PyQt6** — the **Lightshot alternative for Ubuntu / Linux** that Windows users have always had. Designed first for **Ubuntu Linux (both Wayland & X11)** with a clean, modular platform architecture ready for **Windows** and **macOS**.
+
+> **Looking for Lightshot on Linux?** Lightshot has no official Linux version. AvroShot brings the exact Lightshot workflow — freeze screen, drag-select, annotate, copy/save/upload — to Ubuntu, and it is **100% free and open source** with **no ads, no account, no telemetry**.
 
 ---
 
@@ -34,6 +36,41 @@
   - **Wayland**: Uses `org.freedesktop.portal.Screenshot` (XDG Desktop Portal) with automatic permission registration plus fallbacks (`grim`, `gnome-screenshot`, `spectacle`).
   - **X11**: Uses multi-screen `QScreen.grabWindow(0)` stitching.
   - **Windows & macOS**: Built-in platform backend classes (`avroshot/platforms/windows.py`, `avroshot/platforms/macos.py`) ready for packaging with PyInstaller.
+
+---
+
+## 🆚 AvroShot vs Lightshot vs Other Screenshot Tools
+
+Why should you use AvroShot instead of Lightshot, Flameshot, Shutter, or the built-in GNOME Screenshot?
+
+| Feature | **AvroShot** | Lightshot | Flameshot | Shutter | GNOME Screenshot |
+| :--- | :---: | :---: | :---: | :---: | :---: |
+| **Runs on Linux (Ubuntu)** | ✅ Wayland + X11 | ❌ Windows/Mac only | ✅ X11-first | ✅ X11-only | ✅ basic |
+| **Lightshot-style freeze & drag-select** | ✅ | ✅ | ❌ different UX | ❌ | ❌ |
+| **8 resize handles + live size badge** | ✅ | ✅ | ❌ | ❌ | ❌ |
+| **Annotation tools (Pen/Line/Arrow/Rect/Marker/Text)** | ✅ 6 tools | ✅ | ✅ | ⚠️ via editor | ❌ |
+| **Undo / Redo stack** | ✅ | ✅ | ✅ | ✅ | ❌ |
+| **Color picker + thickness control** | ✅ | ✅ | ✅ | ✅ | ❌ |
+| **One-click upload + shareable link** | ✅ 0x0.st / Imgur | ⚠️ prnt.sc only | ✅ Imgur | ❌ | ❌ |
+| **Screenshot history** | ✅ built-in | ❌ | ❌ | ✅ | ❌ |
+| **System tray quick capture** | ✅ | ✅ | ✅ | ✅ | ❌ |
+| **Delayed capture** | ✅ | ✅ | ✅ | ✅ | ✅ |
+| **Free & open source** | ✅ MIT | ❌ freeware, closed | ✅ | ✅ | ✅ |
+| **No ads / no account / no telemetry** | ✅ | ❌ ads in app | ✅ | ✅ | ✅ |
+| **Works offline** | ✅ fully | ⚠️ upload needs web | ✅ | ✅ | ✅ |
+| **Cross-platform (Linux + Windows + macOS)** | ✅ | ⚠️ no Linux | ❌ | ❌ | ❌ |
+
+### Why AvroShot is the better choice
+
+1. **It actually runs on Linux.** Lightshot is Windows/Mac-only. AvroShot is built for Ubuntu first, with native **Wayland (XDG Desktop Portal)** support — not just X11.
+2. **Identical muscle memory.** Freeze screen → drag area → annotate on top → copy / save / upload. If you know Lightshot, you already know AvroShot — same shortcuts, same workflow.
+3. **Everything Lightshot hides behind its own service.** AvroShot uploads to open, neutral hosts (`0x0.st` or **Imgur**) and copies the link instantly — no forced prnt.sc account, no gallery lock-in.
+4. **Zero ads, zero telemetry.** Lightshot shows ads and phones home. AvroShot is MIT-licensed source code you can read and build yourself.
+5. **Extras Lightshot doesn't have.** Built-in screenshot history browser, configurable save patterns, delay capture, and a real settings dialog.
+6. **Lightweight and fast.** Python + PyQt6, no Electron, no background bloat — starts instantly, uses little RAM.
+7. **One app everywhere.** The same codebase covers Linux, Windows, and macOS — your workflow travels with you.
+
+**Bottom line:** if you want the Lightshot experience on Ubuntu — with more features, no ads, and full control over where your screenshots go — **AvroShot is the tool to use.**
 
 ---
 
