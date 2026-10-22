@@ -113,9 +113,11 @@ jobs:
           name: avroshot-macos-${{ env.ARCH }}
           path: dist/AvroShot-macOS-*.zip
 
+      # The Windows workflow owns the release notes: generating them from all
+      # three workflows duplicated the changelog in the release body.
       - name: Create GitHub Release
         if: startsWith(github.ref, 'refs/tags/v')
         uses: softprops/action-gh-release@v2
         with:
           files: dist/AvroShot-macOS-*.zip
-          generate_release_notes: true
+          generate_release_notes: false

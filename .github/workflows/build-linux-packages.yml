@@ -178,6 +178,9 @@ jobs:
             exit 1
           fi
 
+      # The Windows workflow owns the release notes: generating them from all
+      # three workflows duplicated the changelog in the release body.
+      #
       # Both rpm jobs build the same noarch rpm for the same version, so
       # attaching both silently overwrites one asset with the other. Ship the
       # Fedora build: it installs on Fedora, RHEL and openSUSE alike.
@@ -190,4 +193,4 @@ jobs:
             linux/debian/*.deb
             linux/fedora/*.rpm
             linux/arch/*.pkg.tar.zst
-          generate_release_notes: ${{ inputs.tag == '' }}
+          generate_release_notes: false
