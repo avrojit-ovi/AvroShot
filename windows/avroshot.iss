@@ -65,4 +65,8 @@ Name: "{group}\Uninstall {#AppName}"; Filename: "{uninstallexe}"
 Name: "{autodesktop}\{#AppName}"; Filename: "{app}\{#AppExeName}"; Tasks: desktopicon
 
 [Run]
-Filename: "{app}\{#AppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(AppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
+; Launch through Explorer so the app always starts as the logged-on user with
+; normal (unelevated) rights. Starting it straight from an elevated Setup makes
+; Windows' Application Control / Smart App Control block the unsigned exe with
+; "An Application Control policy has blocked this file" (code 4551).
+Filename: "{sys}\explorer.exe"; Parameters: """{app}\{#AppExeName}"""; Description: "{cm:LaunchProgram,{#StringChange(AppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent

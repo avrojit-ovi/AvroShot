@@ -4,6 +4,11 @@ on:
   push:
     tags: ["v*"]
   workflow_dispatch:
+    inputs:
+      tag:
+        description: "Existing release tag to attach the built packages to (e.g. v1.0.1). Leave empty to only rebuild and commit them."
+        required: false
+        type: string
 
 jobs:
   debian:
@@ -155,15 +160,32 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add linux/debian linux/fedora linux/opensuse linux/arch
           git commit -m "Build Linux packages: deb, Fedora/openSUSE rpm, Arch pkg.tar.zst" || echo "No changes to commit"
-          git push origin HEAD:main
+          # The macOS and Windows workflows also commit their artefacts on a tag
+          # push, so retry on top of whatever they pushed instead of failing.
+          pushed=0
+          for i in 1 2 3 4 5; do
+            git fetch origin main --quiet
+            git merge --no-edit origin/main
+            if git push origin HEAD:main; then
+              echo "Pushed on attempt $i"
+              pushed=1
+              break
+            fi
+            sleep 10
+          done
+          if [ "$pushed" != "1" ]; then
+            echo "::error::Could not push the built Linux packages to main after 5 attempts"
+            exit 1
+          fi
 
       - name: Attach packages to the release
-        if: startsWith(github.ref, 'refs/tags/v')
+        if: startsWith(github.ref, 'refs/tags/v') || inputs.tag != ''
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ inputs.tag || github.ref_name }}
           files: |
             linux/debian/*.deb
             linux/fedora/*.rpm
             linux/opensuse/*.rpm
             linux/arch/*.pkg.tar.zst
-          generate_release_notes: true
+          generate_release_notes: ${{ inputs.tag == '' }}

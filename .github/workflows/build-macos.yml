@@ -89,7 +89,23 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add "macos/AvroShot-macOS-${ARCH}.zip"
           git commit -m "Build macOS (${ARCH}) release: AvroShot-macOS-${ARCH}.zip" || echo "No changes to commit"
-          git push origin HEAD:main || echo "Nothing to push"
+          # The Windows and Linux workflows also commit their artefacts on a tag
+          # push, so retry on top of whatever they pushed instead of dropping it.
+          pushed=0
+          for i in 1 2 3 4 5; do
+            git fetch origin main --quiet
+            git merge --no-edit origin/main
+            if git push origin HEAD:main; then
+              echo "Pushed on attempt $i"
+              pushed=1
+              break
+            fi
+            sleep 10
+          done
+          if [ "$pushed" != "1" ]; then
+            echo "::error::Could not push the rebuilt macOS zip to main after 5 attempts"
+            exit 1
+          fi
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4

@@ -71,3 +71,27 @@ the release.
 PyInstaller-packed executables are occasionally flagged by heuristics-based
 scanners. AvroShot is open source (MIT) — you can verify every line, or build
 the exe yourself with the script above.
+
+## Windows blocked AvroShot (Application Control / Smart App Control)
+
+AvroShot's binaries are **not code-signed** (there is no paid signing
+certificate behind this project), so Windows may refuse to start them:
+
+- **Smart App Control** (Windows 11) silently blocks unsigned apps that have no
+  reputation. You may see *"Part of this app has been blocked … we can't
+  confirm who published AvroShot.exe"*.
+- **SmartScreen** shows *"Windows protected your PC"*; click **More info → Run
+  anyway**.
+- A work or school PC with an **Application Control / WDAC policy** blocks it
+  outright — that policy is set by your administrator, not by AvroShot.
+
+If Smart App Control blocks the app, either install the **portable
+`AvroShot.exe`** and allow it when prompted, or turn Smart App Control off:
+
+1. Open **Windows Security** → **App & browser control**.
+2. Select **Smart App Control settings** → **Off**.
+
+Note that turning Smart App Control off is permanent for that Windows install
+(it cannot be switched back on without reinstalling Windows), so decide
+consciously. The setup itself already launches AvroShot through Explorer, so an
+all-users install does not need administrator rights for the app to start.
