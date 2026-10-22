@@ -65,7 +65,15 @@ jobs:
       - name: Install build tools
         run: |
           zypper -n --gpg-auto-import-keys refresh
-          zypper -n install --no-recommends git tar gzip rpm-build
+          # Tumbleweed mirrors occasionally return 403/404 mid-sync; retry.
+          for attempt in 1 2 3 4; do
+            if zypper -n install --no-recommends git tar gzip rpm-build; then
+              break
+            fi
+            echo "zypper attempt ${attempt} failed, retrying in 20s..."
+            sleep 20
+          done
+          command -v rpmbuild >/dev/null || { echo "rpmbuild missing after retries" >&2; exit 1; }
 
       - name: Checkout
         uses: actions/checkout@v4
