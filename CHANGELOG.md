@@ -43,6 +43,23 @@ All notable changes to AvroShot are documented in this file.
   `AvroShot.app` with PyInstaller on `macos-latest`, zipping it, committing
   it into `macos/`, and attaching it to the GitHub Release on `v*` tags.
 
+### Added — Hotkey GUI (Linux)
+- The Settings dialog now has a click-to-record **Global Hotkey** field: click
+  it, press e.g. `Super+Shift+S`, and it shows the exact binding that gets
+  registered — no need to type `<Super><Shift>s` by hand. `Esc` cancels.
+- **Apply Shortcut** binds the recording immediately, and **Save Settings**
+  also registers a newly recorded hotkey (previously the value was only
+  stored, never bound).
+
+### Fixed
+- The user-level `install.sh` launcher pointed at the repository root instead
+  of the `linux/` package directory, so every entry point (`avroshot`, the
+  dock icon, the tray menu and the global hotkey) died with
+  `ModuleNotFoundError: No module named 'avroshot'`.
+- The installer now copies the package to `~/.local/share/avroshot`, runs
+  `avroshot --version` to verify the launcher, and aborts with a clear message
+  instead of leaving a silently broken command behind.
+
 ### Added — Linux packages for every distribution
 - `linux/packaging/stage_app.sh` stages one shared install tree (sources,
   `avroshot` launcher, desktop entries, icon, docs) reused by every format.

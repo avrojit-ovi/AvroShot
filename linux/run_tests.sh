@@ -56,6 +56,18 @@ except Exception as e:
     print("skipped / failed:", repr(e))
 print()
 
+print("--- Hotkey accelerator mapping ---")
+from PyQt6.QtCore import Qt
+from avroshot.ui.settings_dialog import key_to_accelerator
+
+check("letter -> lowercase letter", key_to_accelerator(int(Qt.Key.Key_S)) == "s")
+check("digit -> digit", key_to_accelerator(int(Qt.Key.Key_5)) == "5")
+check("function key -> F9", key_to_accelerator(int(Qt.Key.Key_F9)) == "F9")
+check("named key -> Print", key_to_accelerator(int(Qt.Key.Key_Print)) == "Print")
+check("modifier-only key ignored", key_to_accelerator(int(Qt.Key.Key_Control)) is None)
+check("unmapped key ignored", key_to_accelerator(int(Qt.Key.Key_F35) + 1) is None)
+print()
+
 print("--- Smoke test: built CLI entry point ---")
 from avroshot.main import main
 if os.path.exists(os.path.expanduser("~/.local/bin/avroshot")):

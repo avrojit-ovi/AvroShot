@@ -17,15 +17,20 @@ if ! python3 -c "import PyQt6" >/dev/null 2>&1; then
 fi
 
 echo "[2/5] Installing avroshot command to ${BIN_DIR}/avroshot..."
+# Copy the package into ~/.local/share/avroshot so the command keeps working
+# even if the repository folder is moved or deleted afterwards.
+APP_DIR="${HOME}/.local/share/avroshot"
+rm -rf "${APP_DIR}/avroshot"
+mkdir -p "${APP_DIR}"
+cp -r "${ROOT_DIR}/avroshot" "${APP_DIR}/"
+find "${APP_DIR}/avroshot" -name '__pycache__' -type d -exec rm -rf {} + 2>/dev/null || true
 cat > "${BIN_DIR}/avroshot" << EOF
 #!/usr/bin/env python3
-import os
 import sys
 
-# Ensure AvroShot source package is on sys.path
-REPO_PATH = ${ROOT_DIR@Q}
-if REPO_PATH not in sys.path:
-    sys.path.insert(0, REPO_PATH)
+APP_DIR = ${APP_DIR@Q}
+if APP_DIR not in sys.path:
+    sys.path.insert(0, APP_DIR)
 
 from avroshot.main import main
 
@@ -33,6 +38,12 @@ if __name__ == "__main__":
     raise SystemExit(main())
 EOF
 chmod +x "${BIN_DIR}/avroshot"
+
+if ! "${BIN_DIR}/avroshot" --version >/dev/null 2>&1; then
+    echo "ERROR: ${BIN_DIR}/avroshot cannot start - the avroshot package was not found in ${APP_DIR}." >&2
+    echo "       Fix PyQt6 first (pip install --user PyQt6) and re-run this script." >&2
+    exit 1
+fi
 
 echo "[3/5] Installing Desktop Application entries & icons..."
 cp "${ROOT_DIR}/assets/avroshot.svg" "${ICON_SCALABLE_DIR}/avroshot.svg"
