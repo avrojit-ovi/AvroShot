@@ -80,7 +80,9 @@ chmod 0644 "${BUILD_ROOT}/DEBIAN/control"
 
 mkdir -p "${OUT_DIR}"
 OUT_DEB="${OUT_DIR}/${PKG_NAME}_${VERSION}_all.deb"
-rm -f "${OUT_DEB}"
+# Drop packages from older versions first: CI inspects and commits whatever sits
+# in this folder, and a leftover .deb makes the avroshot_*.deb glob ambiguous.
+rm -f "${OUT_DIR}/${PKG_NAME}"_*.deb
 dpkg-deb --root-owner-group --build "${BUILD_ROOT}" "${OUT_DEB}" >/dev/null
 
 echo "Built Debian package: ${OUT_DEB}"
