@@ -58,7 +58,7 @@ jobs:
         run: |
           & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" /Odist windows/avroshot.iss
 
-      - name: Check artifact sizes (GitHub per-file limit: 100MB)
+      - name: Check artifact sizes against GitHub's 100MB per-file limit
         run: |
           Get-ChildItem dist\*.exe | ForEach-Object {
             $mb = [math]::Round($_.Length / 1MB, 1)
