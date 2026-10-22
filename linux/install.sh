@@ -56,7 +56,7 @@ chmod +x "${APPS_DIR}/io.github.avroshot.AvroShot.desktop" "${APPS_DIR}/avroshot
 echo "[4/5] Configuring Wayland Portal screenshot permission & Global Shortcut..."
 "${BIN_DIR}/avroshot" --register-shortcut "<Super><Shift>s" || true
 
-echo "[5/5] Building .deb package in ${ROOT_DIR}/dist/..."
+echo "[5/5] Building .deb package in ${ROOT_DIR}/debian/..."
 bash "${ROOT_DIR}/packaging/build_deb.sh"
 
 echo ""
@@ -64,4 +64,4 @@ echo "✅ AvroShot installed successfully!"
 echo "   • Command:        ${BIN_DIR}/avroshot"
 echo "   • Hotkey:         Super+Shift+S (Windows+Shift+S)"
 echo "   • App Launcher:   Search 'AvroShot' in Ubuntu Applications"
-echo "   • Debian Package: ${ROOT_DIR}/dist/avroshot_1.0.0_all.deb"
+echo "   • Debian Package: ${ROOT_DIR}/debian/avroshot_1.0.0_all.deb"

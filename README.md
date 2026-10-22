@@ -86,7 +86,7 @@ What `install.sh` does:
 2. Installs the `avroshot` CLI command to `~/.local/bin/avroshot`.
 3. Installs the desktop entry (`io.github.avroshot.AvroShot.desktop`) and vector/PNG icons so **AvroShot** appears in your Ubuntu Application Menu.
 4. Configures Wayland screenshot permission and registers the global shortcut **`Super+Shift+S`** (`<Super><Shift>s`).
-5. Builds the installable Debian package at `dist/avroshot_1.0.0_all.deb`.
+5. Builds the installable Debian package at `linux/debian/avroshot_1.0.0_all.deb`.
 
 ---
 
@@ -121,19 +121,46 @@ avroshot --register-shortcut "<Super><Shift>s"  # Bind Ubuntu custom shortcut
 
 ---
 
-## 📦 Building the `.deb` Package
+## 📦 Prebuilt Linux Packages
+
+Every package is built natively on its own distribution by the
+[Build Linux Packages](.github/workflows/build-linux-packages.yml) workflow and
+committed straight into the matching folder — no build step needed to install:
+
+| Distribution family | Package | Folder |
+| :--- | :--- | :--- |
+| Debian 12+, Ubuntu 22.04+, Mint, Pop!_OS, Zorin, Kali, MX, Deepin | `avroshot_1.0.0_all.deb` | [`linux/debian`](linux/debian) |
+| Fedora, RHEL 9/10, CentOS Stream, Rocky, Alma, Oracle, Amazon Linux | `avroshot-1.0.0-1.noarch.rpm` | [`linux/fedora`](linux/fedora) |
+| openSUSE Tumbleweed / Leap 15.6+, SLES | `avroshot-1.0.0-1.noarch.rpm` | [`linux/opensuse`](linux/opensuse) |
+| Arch Linux, Manjaro, EndeavourOS, Garuda, CachyOS | `avroshot-1.0.0-1-any.pkg.tar.zst` | [`linux/arch`](linux/arch) |
 
 ```bash
-bash linux/packaging/build_deb.sh
+# Debian / Ubuntu / Mint / Pop!_OS / Kali
+sudo apt install ./linux/debian/avroshot_1.0.0_all.deb
+
+# Fedora / RHEL / Rocky / Alma / CentOS Stream
+sudo dnf install ./linux/fedora/avroshot-1.0.0-1.noarch.rpm
+
+# openSUSE / SLES
+sudo zypper install ./linux/opensuse/avroshot-1.0.0-1.noarch.rpm
+
+# Arch / Manjaro / EndeavourOS
+sudo pacman -U ./linux/arch/avroshot-1.0.0-1-any.pkg.tar.zst
 ```
-The `.deb` package is generated at:
-```text
-dist/avroshot_1.0.0_all.deb
-```
-To install it system-wide on any Ubuntu/Debian machine:
+
+Each package depends on the distribution's own Python + PyQt6 build (so Qt
+matches your theme and updates), installs `/usr/bin/avroshot`, the application
+menu entry and the icon, and is rebuildable from one shared staging tree:
+
 ```bash
-sudo apt install ./dist/avroshot_1.0.0_all.deb
+bash linux/packaging/build_deb.sh           # .deb   -> linux/debian/
+bash linux/packaging/build_rpm.sh fedora    # .rpm   -> linux/fedora/
+bash linux/packaging/build_rpm.sh opensuse  # .rpm   -> linux/opensuse/
+bash linux/packaging/build_arch.sh          # Arch   -> linux/arch/
 ```
+
+> Tip: push a `v*` tag (or run the workflow manually) and CI rebuilds every
+> package, commits it into its folder and attaches it to the GitHub Release.
 
 ---
 
@@ -166,7 +193,16 @@ AvroShot/
 │   │   ├── avroshot.svg
 │   │   └── io.github.avroshot.AvroShot.desktop
 │   ├── packaging/
-│   │   └── build_deb.sh     # Debian .deb package builder
+│   │   ├── stage_app.sh     # Shared install-tree staging for all packages
+│   │   ├── build_deb.sh     # Debian/Ubuntu .deb builder
+│   │   ├── build_rpm.sh     # Fedora/openSUSE .rpm builder
+│   │   ├── avroshot.spec    # Shared RPM spec (per-family Requires)
+│   │   ├── build_arch.sh    # Arch/Manjaro package builder
+│   │   └── PKGBUILD         # Arch recipe (AUR-ready)
+│   ├── debian/              # avroshot_1.0.0_all.deb (committed by CI)
+│   ├── fedora/              # avroshot-1.0.0-1.noarch.rpm (committed by CI)
+│   ├── opensuse/            # avroshot-1.0.0-1.noarch.rpm (committed by CI)
+│   ├── arch/                # avroshot-1.0.0-1-any.pkg.tar.zst (committed by CI)
 │   ├── tests/
 │   │   └── test_avroshot.py # Automated test suite
 │   ├── install.sh           # One-command Ubuntu installer
@@ -185,7 +221,8 @@ AvroShot/
 │   └── README.md            # macOS install guide
 ├── .github/workflows/
 │   ├── build-windows.yml    # CI: builds AvroShot.exe + AvroShot-Setup.exe
-│   └── build-macos.yml      # CI: builds AvroShot.app + zip
+│   ├── build-macos.yml      # CI: builds AvroShot.app + zip
+│   └── build-linux-packages.yml  # CI: builds deb, rpm, Arch packages
 └── README.md
 ```
 

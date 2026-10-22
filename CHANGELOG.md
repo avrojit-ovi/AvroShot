@@ -43,6 +43,21 @@ All notable changes to AvroShot are documented in this file.
   `AvroShot.app` with PyInstaller on `macos-latest`, zipping it, committing
   it into `macos/`, and attaching it to the GitHub Release on `v*` tags.
 
+### Added — Linux packages for every distribution
+- `linux/packaging/stage_app.sh` stages one shared install tree (sources,
+  `avroshot` launcher, desktop entries, icon, docs) reused by every format.
+- Debian/Ubuntu `.deb` (Debian 12+, Ubuntu 22.04+, Mint, Pop!_OS, Zorin,
+  Kali, MX, Deepin) committed to `linux/debian/`.
+- Fedora/RHEL `.rpm` (Fedora, RHEL 9/10, CentOS Stream, Rocky, Alma, Oracle,
+  Amazon Linux) committed to `linux/fedora/`.
+- openSUSE/SLES `.rpm` built from the same spec with openSUSE binding names
+  (`python3-PyQt6`, `python3-dbus-python`), committed to `linux/opensuse/`.
+- Arch/Manjaro `.pkg.tar.zst` built with `makepkg` from
+  `linux/packaging/PKGBUILD` (AUR-ready), committed to `linux/arch/`.
+- GitHub Actions workflow (`.github/workflows/build-linux-packages.yml`) runs
+  each build inside the target distribution's container, inspects the produced
+  package (`dpkg-deb`, `rpm -qip`, `pacman -Qip`) and commits it.
+
 ### Docs
 - README with feature list, install guides (Linux + Windows + macOS), CLI
   reference, keyboard shortcuts, and AvroShot vs Lightshot comparison section.
