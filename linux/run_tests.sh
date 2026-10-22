@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 set -euo pipefail
-REPO_DIR="/home/chief/AvroShot"
+REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 export PYTHONPATH="${REPO_DIR}:${PYTHONPATH:-}"
 cd "${REPO_DIR}"
 exec python3 - "${@+"$@"}" <<'PY'
 import os
 import sys
 
-REPO_DIR = "/home/chief/AvroShot"
+REPO_DIR = os.getcwd()
 if REPO_DIR not in sys.path:
     sys.path.insert(0, REPO_DIR)
 

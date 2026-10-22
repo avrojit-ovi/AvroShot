@@ -40,7 +40,7 @@
 ## 🚀 Quick Install on Ubuntu
 
 ```bash
-cd ~/AvroShot
+cd ~/AvroShot/linux
 bash install.sh
 ```
 
@@ -87,7 +87,7 @@ avroshot --register-shortcut "<Super><Shift>s"  # Bind Ubuntu custom shortcut
 ## 📦 Building the `.deb` Package
 
 ```bash
-bash packaging/build_deb.sh
+bash linux/packaging/build_deb.sh
 ```
 The `.deb` package is generated at:
 ```text
@@ -104,43 +104,63 @@ sudo apt install ./dist/avroshot_1.0.0_all.deb
 
 ```text
 AvroShot/
-├── avroshot/
-│   ├── __init__.py          # App metadata & version
-│   ├── __main__.py          # python3 -m avroshot entrypoint
-│   ├── main.py              # CLI argument parser & runner
-│   ├── config.py            # Cross-platform settings manager (Linux/Windows/macOS)
-│   ├── annotations.py       # Pen, Line, Arrow, Rect, Marker, Text & Undo/Redo stack
-│   ├── history.py           # Screenshot history manager & JSON index
-│   ├── uploader.py          # 0x0.st & Imgur anonymous uploader + QThread worker
-│   ├── platforms/
-│   │   ├── base.py          # Abstract PlatformBackend interface
-│   │   ├── linux.py         # Ubuntu Wayland (XDG Portal) & X11 backend
-│   │   ├── windows.py       # Windows backend
-│   │   └── macos.py         # macOS backend
-│   └── ui/
-│       ├── __init__.py      # Vector app icon generator
-│       ├── overlay.py       # Fullscreen Lightshot overlay, 8 handles, size badge
-│       ├── toolbar.py       # Floating annotation & action toolbars
-│       ├── history_dialog.py# Screenshot history browser
-│       ├── settings_dialog.py# Preferences dialog
-│       └── tray.py          # System tray icon & app controller
-├── assets/
-│   ├── avroshot.svg
-│   └── io.github.avroshot.AvroShot.desktop
-├── packaging/
-│   └── build_deb.sh         # Debian .deb package builder
-├── tests/
-│   └── test_avroshot.py     # Automated test suite
-├── install.sh               # One-command Ubuntu installer
-├── pyproject.toml
-├── requirements.txt
+├── linux/                    # Linux (Ubuntu) source code
+│   ├── avroshot/
+│   │   ├── __init__.py      # App metadata & version
+│   │   ├── __main__.py      # python3 -m avroshot entrypoint
+│   │   ├── main.py          # CLI argument parser & runner
+│   │   ├── config.py        # Cross-platform settings manager (Linux/Windows/macOS)
+│   │   ├── annotations.py   # Pen, Line, Arrow, Rect, Marker, Text & Undo/Redo stack
+│   │   ├── history.py       # Screenshot history manager & JSON index
+│   │   ├── uploader.py      # 0x0.st & Imgur anonymous uploader + QThread worker
+│   │   ├── platforms/
+│   │   │   ├── base.py      # Abstract PlatformBackend interface
+│   │   │   ├── linux.py     # Ubuntu Wayland (XDG Portal) & X11 backend
+│   │   │   ├── windows.py   # Windows backend
+│   │   │   └── macos.py     # macOS backend
+│   │   └── ui/
+│   │       ├── __init__.py  # Vector app icon generator
+│   │       ├── overlay.py   # Fullscreen Lightshot overlay, 8 handles, size badge
+│   │       ├── toolbar.py   # Floating annotation & action toolbars
+│   │       ├── history_dialog.py # Screenshot history browser
+│   │       ├── settings_dialog.py # Preferences dialog
+│   │       └── tray.py      # System tray icon & app controller
+│   ├── assets/
+│   │   ├── avroshot.svg
+│   │   └── io.github.avroshot.AvroShot.desktop
+│   ├── packaging/
+│   │   └── build_deb.sh     # Debian .deb package builder
+│   ├── tests/
+│   │   └── test_avroshot.py # Automated test suite
+│   ├── install.sh           # One-command Ubuntu installer
+│   ├── run_tests.sh         # Test suite runner
+│   ├── pyproject.toml
+│   └── requirements.txt
+├── windows/                 # Windows build tooling
+│   ├── icon.ico             # Windows app icon
+│   ├── avroshot.iss         # Inno Setup installer script
+│   └── build_windows.bat    # One-command Windows build script
+├── .github/workflows/
+│   └── build-windows.yml    # CI: builds AvroShot.exe + AvroShot-Setup.exe
 └── README.md
 ```
 
 ---
 
-## 🖥️ Future Windows & macOS Packaging
+## 🪟 Building the Windows Version
 
-Because `avroshot/platforms/` cleanly separates OS-specific capture and clipboard logic from the PyQt6 UI:
-- **Windows (`.exe`)**: `pip install pyinstaller PyQt6 && pyinstaller --noconsole --onefile --name AvroShot avroshot/main.py`
-- **macOS (`.app`)**: `pip install pyinstaller PyQt6 && pyinstaller --windowed --name AvroShot avroshot/main.py`
+Because `avroshot/platforms/` cleanly separates OS-specific capture and clipboard logic from the PyQt6 UI, the same codebase builds on Windows.
+
+**Option A — GitHub Actions (recommended):** push a `v*` tag (or run the *Build Windows Release* workflow manually from the Actions tab). The CI builds on `windows-latest` and produces both:
+- `AvroShot.exe` — portable executable
+- `AvroShot-Setup.exe` — installable installer (Inno Setup: Start Menu + optional Desktop shortcut)
+
+Download them from the workflow run's artifacts or the GitHub Release page.
+
+**Option B — build locally on a Windows machine:**
+```bat
+windows\build_windows.bat
+```
+This runs PyInstaller and compiles the Inno Setup installer (requires [Inno Setup 6](https://jrsoftware.org/isinfo.php) for the installer step; the portable `.exe` is built regardless).
+
+**macOS (`.app`)**: `pip install pyinstaller PyQt6 && pyinstaller --windowed --name AvroShot linux/avroshot/main.py`
