@@ -174,11 +174,18 @@ AvroShot/
 │   ├── pyproject.toml
 │   └── requirements.txt
 ├── windows/                 # Windows build tooling
+│   ├── AvroShot.exe         # Prebuilt portable executable (committed by CI)
+│   ├── AvroShot-Setup.exe   # Prebuilt installable setup (committed by CI)
 │   ├── icon.ico             # Windows app icon
 │   ├── avroshot.iss         # Inno Setup installer script
 │   └── build_windows.bat    # One-command Windows build script
+├── macos/                   # macOS build tooling
+│   ├── AvroShot-macOS-arm64.zip  # Prebuilt .app bundle (committed by CI)
+│   ├── icon.png             # macOS app icon source
+│   └── README.md            # macOS install guide
 ├── .github/workflows/
-│   └── build-windows.yml    # CI: builds AvroShot.exe + AvroShot-Setup.exe
+│   ├── build-windows.yml    # CI: builds AvroShot.exe + AvroShot-Setup.exe
+│   └── build-macos.yml      # CI: builds AvroShot.app + zip
 └── README.md
 ```
 
@@ -200,4 +207,13 @@ windows\build_windows.bat
 ```
 This runs PyInstaller and compiles the Inno Setup installer (requires [Inno Setup 6](https://jrsoftware.org/isinfo.php) for the installer step; the portable `.exe` is built regardless).
 
-**macOS (`.app`)**: `pip install pyinstaller PyQt6 && pyinstaller --windowed --name AvroShot linux/avroshot/main.py`
+---
+
+## 🍎 Building the macOS Version
+
+The macOS build is produced by CI on `macos-latest` (Apple Silicon):
+
+- **`macos/AvroShot-macOS-arm64.zip`** — contains `AvroShot.app`. Unzip, drag to **Applications**, then right-click → **Open** the first time (the build isn't notarized with a paid Apple certificate).
+- Also attached to the [latest release](https://github.com/avrojit-ovi/AvroShot/releases/latest).
+
+See [macos/README.md](macos/README.md) for Gatekeeper workaround, Screen Recording permission, and local build steps.
